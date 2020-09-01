@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.OnItemClickListene
         cursor.close()
     }
 
-    fun insertItem() {
+    fun insertItem(view: View) {
         val mDialogView = LayoutInflater.from(this).inflate(R.layout.layout_additem, null)
         val mBuilder = AlertDialog.Builder(this)
             .setView(mDialogView)
@@ -257,8 +257,7 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.OnItemClickListene
             values.put("reminderId", clickedItem.notificationId)
             values.put("time", calendar.timeInMillis)
             values.put("topic", clickedItem.topic)
-            db.update(TableInfo.TABLE_NAME,values,"reminderId=?", arrayOf(clickedItem.notificationId.toString()))
-
+            db.update(TableInfo.TABLE_NAME,values,"${TableInfo.TABLE_COLUMN_REMINDER_ID}=?", arrayOf(clickedItem.notificationId.toString()))
             mAlertDialog.dismiss()
             adapter.notifyItemChanged(position)
         }
