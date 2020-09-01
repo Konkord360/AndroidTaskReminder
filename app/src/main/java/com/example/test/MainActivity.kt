@@ -4,10 +4,14 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.icu.util.Calendar
 import android.os.Bundle
+import android.provider.BaseColumns
+import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -22,26 +26,73 @@ import kotlinx.android.synthetic.main.layout_additem.view.text_topic
 import kotlinx.android.synthetic.main.layout_additem.view.timePicker
 import kotlinx.android.synthetic.main.layout_changeitem.view.*
 import android.util.Log
+import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity(), RecyclerViewAdapter.OnItemClickListener {
     private val exampleList = ArrayList<ExampleItem>()
     private val adapter = RecyclerViewAdapter(exampleList, this)
     private var newItem = ExampleItem("", "", "", "", 0)
-
+    lateinit var  dbHelper: DataBaseHelper
+    lateinit var  db: SQLiteDatabase
     lateinit var alarmManager: AlarmManager
     lateinit var alarmIntent: PendingIntent
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("START", "STARTING********")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recycler_view.adapter = this.adapter
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.setHasFixedSize(true)
+
+        dbHelper = DataBaseHelper(applicationContext)
+        db = dbHelper.writableDatabase
+        loadFromDataBase()
     }
 
-    fun insertItem(view: View) {
+    private fun loadFromDataBase(){
+        val cursor = this.db.query(TableInfo.TABLE_NAME, null, null, null,
+            null , null, "${TableInfo.TABLE_COLUMN_REMINDER_ID} ASC")
+
+        while(cursor.moveToNext()){
+                val calendar = Calendar.getInstance()
+                calendar.timeInMillis = cursor.getString(3).toLong()
+                Log.d("cursor strings", "${cursor.getString(1)}, ${cursor.getString(2)},${cursor.getString(3)},${cursor.getString(4)},")
+                Log.d("calendar values", "HOUR: ${calendar.get(Calendar.HOUR_OF_DAY)}, minute: ${calendar.get(Calendar.MINUTE)}, year: ${calendar.get(Calendar.YEAR)}, moth: ${calendar.get(Calendar.MONTH)}, day: ${calendar.get(Calendar.DAY_OF_MONTH)}")
+                    val hour =
+                    if (calendar.get(Calendar.HOUR_OF_DAY).toString().length == 1) {
+                        "0" + calendar.get(Calendar.HOUR_OF_DAY).toString()
+                    } else {
+                        calendar.get(Calendar.HOUR_OF_DAY).toString()
+                    } + ":" +
+                            if (calendar.get(Calendar.MINUTE).toString().length == 1) {
+                                "0" + calendar.get(Calendar.MINUTE).toString()
+                            } else {
+                                calendar.get(Calendar.MINUTE).toString()
+                            }
+
+                val day =
+                    if (calendar.get(Calendar.DAY_OF_MONTH).toString().length == 1) {
+                        "0" + calendar.get(Calendar.DAY_OF_MONTH).toString()
+                    } else {
+                        calendar.get(Calendar.DAY_OF_MONTH).toString()
+                    }
+
+                var month = (calendar.get(Calendar.MONTH) + 1).toString()
+                month = if (month.length == 1) {
+                    "0$month"
+                } else {
+                    month
+                }
+                val date = calendar.get(Calendar.YEAR).toString() + ":" + month + ":" + day
+
+                val newItem = ExampleItem(cursor.getString(1), hour, date, cursor.getString(2), cursor.getString(4).toInt())
+                exampleList.add(newItem)
+        }
+        cursor.close()
+    }
+
+    fun insertItem() {
         val mDialogView = LayoutInflater.from(this).inflate(R.layout.layout_additem, null)
         val mBuilder = AlertDialog.Builder(this)
             .setView(mDialogView)
@@ -93,7 +144,6 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.OnItemClickListene
             )
 
             alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            Log.d("CREATEING NEW PENDING INTENT", "WITH EXTRAS TOPIC: $topic, TEXT: $text, id: $id")
 
             val intentTest = Intent(applicationContext, AlarmReceiver::class.java)
             alarmIntent = PendingIntent.getBroadcast(
@@ -114,11 +164,18 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.OnItemClickListene
             mAlertDialog.dismiss()
             this.exampleList.add(exampleList.size, newItem)
             adapter.notifyItemInserted(exampleList.size)
+            //insert into database
+           val values = ContentValues()
+           values.put("text", newItem.text)
+           values.put("reminderId", newItem.notificationId)
+           values.put("time", calendar.timeInMillis)
+           values.put("topic", newItem.topic)
+           Log.d("TIME IN DATABASE", "${calendar.timeInMillis}")
+           db.insertOrThrow(TableInfo.TABLE_NAME, null, values)
         }
     }
 
     override fun onItemClick(position: Int) {
-        //Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
         val clickedItem: ExampleItem = exampleList[position]
 
         val mDialogView = LayoutInflater.from(this).inflate(R.layout.layout_changeitem, null)
@@ -195,6 +252,12 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.OnItemClickListene
                 calendar.timeInMillis,
                 alarmIntent
             )
+            val values = ContentValues()
+            values.put("text", clickedItem.text)
+            values.put("reminderId", clickedItem.notificationId)
+            values.put("time", calendar.timeInMillis)
+            values.put("topic", clickedItem.topic)
+            db.update(TableInfo.TABLE_NAME,values,"reminderId=?", arrayOf(clickedItem.notificationId.toString()))
 
             mAlertDialog.dismiss()
             adapter.notifyItemChanged(position)
@@ -210,6 +273,7 @@ class MainActivity : AppCompatActivity(), RecyclerViewAdapter.OnItemClickListene
                     .putExtra("notification_id", clickedItem.notificationId), 0
             ).cancel()
 
+            db.delete(TableInfo.TABLE_NAME,"reminderId=?", arrayOf(clickedItem.notificationId.toString()))
             mAlertDialog.dismiss()
             exampleList.removeAt(position)
             adapter.notifyItemRemoved(position)
