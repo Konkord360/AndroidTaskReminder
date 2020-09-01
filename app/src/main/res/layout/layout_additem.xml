@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+    <EditText
+            android:layout_width="363dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="Topic"
+            android:ems="10"
+            android:id="@+id/topic_text" android:layout_marginTop="15dp" android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="27dp" android:layout_alignParentStart="true"
+            android:layout_marginStart="21dp"
+    />
+    <EditText
+            android:layout_width="366dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="Text"
+            android:ems="10"
+            android:id="@+id/text_text"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="22dp" android:layout_alignParentStart="true"
+            android:layout_marginStart="23dp" android:layout_marginTop="21dp" android:layout_below="@+id/topic_text"/>
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="49dp"
+            android:inputType="time"
+            android:ems="10"
+            android:id="@+id/editText4"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="98dp"
+            android:layout_marginTop="26dp" android:layout_below="@+id/editText5"/>
+    <DatePicker
+            android:id="@+id/datePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:datePickerMode="calendar"/>
+    <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:ems="10"
+            android:id="@+id/editText5"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="98dp" android:layout_alignParentStart="true"
+            android:layout_marginStart="100dp" android:layout_marginTop="17dp" android:layout_below="@+id/text_text"/>
+    <Button
+            android:text="Add Item"
+            android:layout_width="138dp"
+            android:layout_height="wrap_content" android:id="@+id/button_addNewReminder"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="134dp"
+            android:layout_alignParentStart="true" android:layout_marginStart="138dp" android:layout_marginTop="35dp"
+            android:layout_below="@+id/editText4"/>
+</RelativeLayout>

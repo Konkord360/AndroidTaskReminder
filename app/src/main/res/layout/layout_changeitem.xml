@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+    <EditText
+            android:layout_width="363dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="Topic"
+            android:ems="10"
+            android:id="@+id/text_topic" android:layout_marginTop="15dp" android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="27dp" android:layout_alignParentStart="true"
+            android:layout_marginStart="21dp"
+    />
+    <EditText
+            android:layout_width="366dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="Text"
+            android:ems="10"
+            android:id="@+id/text_text"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="22dp" android:layout_alignParentStart="true"
+            android:layout_marginStart="23dp" android:layout_marginTop="21dp" android:layout_below="@+id/text_topic"/>
+    <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="match_parent"
+            android:layout_height="108dp"
+            android:layout_marginTop="-2dp"
+            android:timePickerMode="spinner" android:layout_below="@+id/datePicker"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="0dp" android:layout_alignParentStart="true"
+            android:layout_marginStart="0dp"/>
+    <DatePicker
+            android:id="@+id/datePicker"
+            android:layout_width="match_parent"
+            android:layout_height="114dp"
+            android:datePickerMode="spinner"
+            android:calendarViewShown="false"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="0dp"
+            android:layout_alignParentStart="true" android:layout_marginStart="0dp" android:layout_marginTop="25dp"
+            android:layout_below="@+id/text_text"/>
+    <Button
+            android:text="Delete"
+            android:layout_width="138dp"
+            android:layout_height="wrap_content" android:id="@+id/button_deleteReminder"
+            android:layout_alignParentEnd="true" android:layout_marginEnd="29dp"
+            android:layout_marginTop="44dp" android:layout_below="@+id/timePicker"
+    />
+    <Button
+            android:text="Update"
+            android:layout_width="138dp"
+            android:layout_height="wrap_content" android:id="@+id/button_updateReminder"
+            android:layout_alignParentStart="true" android:layout_marginStart="29dp"
+            android:layout_marginTop="45dp" android:layout_below="@+id/timePicker"
+            android:layout_toStartOf="@+id/button_addNewReminder" android:layout_marginEnd="72dp"/>
+</RelativeLayout>
